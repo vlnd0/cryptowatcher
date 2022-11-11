@@ -1,9 +1,19 @@
 package data
 
 import (
-    "github.com/Rhymond/go-money"
-    "github.com/getlantern/systray"
+	"fmt"
+	"github.com/Rhymond/go-money"
+	"github.com/f-sev/cryptowatcher/config"
+	"github.com/getlantern/systray"
+	"github.com/huobirdcenter/huobi_golang/pkg/client"
+	"strconv"
+	"strings"
 )
+
+type HuobiJson struct {
+	Tokens      []TronTokenJson `json:"tokens"`
+	TotalFrozen int32           `json:"totalFrozen"`
+}
 
 var HuobiWallet = HuobiDataSource{
 	CryptoDataSource{
@@ -27,10 +37,20 @@ type HuobiDataSource struct {
 
 func (h *HuobiDataSource) Collect() {
 	h.Balance = make(BalanceType)
-	// TODO: Load assets!
+	huobiClient := new(client.AccountClient).Init(config.AccessKey, config.SecretKey, config.Host)
+	//resp, err := huobiClient.GetAccountInfo()
+	resp, err := huobiClient.GetAccountBalance(config.AccountId)
+	if err != nil {
+		fmt.Printf("error. Huobi. %s", err.Error())
+	}
 
-	h.Balance["USDT"] = 1005.0555
-	h.Balance["TRX"] = 1005.0555
+	for _, token := range resp.List {
+		if token.Balance != "0" {
+			val, _ := strconv.ParseFloat(token.Balance, 64)
+			h.Balance[strings.ToUpper(token.Currency)] = val
+		}
+	}
+
 }
 
 func (h *HuobiDataSource) TotalFiat() *money.Money {
@@ -38,6 +58,6 @@ func (h *HuobiDataSource) TotalFiat() *money.Money {
 }
 
 func (h *HuobiDataSource) Display() {
-    item := systray.AddMenuItem(h.Name + "(" + h.Balance.TotalFiat().Display() + ")", "")
-    h.Balance.Display(item)
+	item := systray.AddMenuItem(h.Name+"("+h.Balance.TotalFiat().Display()+")", "")
+	h.Balance.Display(item)
 }
