@@ -37,9 +37,9 @@ type HuobiDataSource struct {
 
 func (h *HuobiDataSource) Collect() {
 	h.Balance = make(BalanceType)
-	huobiClient := new(client.AccountClient).Init(config.AccessKey, config.SecretKey, config.Host)
+	huobiClient := new(client.AccountClient).Init(config.HuobiAccessKey, config.HuobiSecretKey, config.HuobiHost)
 	//resp, err := huobiClient.GetAccountInfo()
-	resp, err := huobiClient.GetAccountBalance(config.AccountId)
+	resp, err := huobiClient.GetAccountBalance(config.HuobiAccountId)
 	if err != nil {
 		fmt.Printf("error. Huobi. %s", err.Error())
 	}
