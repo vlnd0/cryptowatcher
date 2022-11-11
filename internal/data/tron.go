@@ -10,7 +10,8 @@ import (
 )
 
 type TronJson struct {
-	Tokens []TronTokenJson `json:"tokens"`
+	Tokens      []TronTokenJson `json:"tokens"`
+	TotalFrozen int32           `json:"totalFrozen"`
 }
 
 type TronTokenJson struct {
@@ -52,6 +53,9 @@ func (t *TronDataSource) Collect() {
 	for _, token := range tronJson.Tokens {
 		value, _ := strconv.Atoi(token.Balance)
 		t.Balance[strings.ToUpper(token.TokenAbbr)] = float64(value) / 1000000
+		if token.TokenAbbr == "trx" && tronJson.TotalFrozen > 0 {
+			t.Balance[strings.ToUpper(token.TokenAbbr)] += float64(tronJson.TotalFrozen) / 1000000
+		}
 	}
 
 }
