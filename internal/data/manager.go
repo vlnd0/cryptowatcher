@@ -1,19 +1,20 @@
 package data
 
 import (
-    "github.com/Rhymond/go-money"
-    "github.com/f-sev/cryptowatcher/internal/currencies"
-    "github.com/getlantern/systray"
+	"github.com/Rhymond/go-money"
+	"github.com/f-sev/cryptowatcher/internal/currencies"
+	"github.com/getlantern/systray"
 )
 
 var Manager = CryptoManager{}
 
 func init() {
-    Manager.cryptoDataSources = []Collectible{
-        &TronWallet,
-        &HuobiWallet,
-        &KucoinWallet,
-    }
+	Manager.cryptoDataSources = []Collectible{
+		&TronWallet,
+		&BSCWallet,
+		&HuobiWallet,
+		&KucoinWallet,
+	}
 }
 
 type CryptoManager struct {
@@ -21,16 +22,15 @@ type CryptoManager struct {
 }
 
 func (m *CryptoManager) Collect() {
-    total := money.New(0.0, currencies.DefaultFiatCurrency)
+	total := money.New(0.0, currencies.DefaultFiatCurrency)
 
 	for _, value := range m.cryptoDataSources {
 		value.Collect()
-        total, _ = total.Add(value.TotalFiat())
+		total, _ = total.Add(value.TotalFiat())
 	}
 
-    systray.SetTitle("🌕 Balance: " + total.Display())
-    for _, value := range m.cryptoDataSources {
-        value.Display()
-    }
+	systray.SetTitle("🌕 Balance: " + total.Display())
+	for _, value := range m.cryptoDataSources {
+		value.Display()
+	}
 }
-

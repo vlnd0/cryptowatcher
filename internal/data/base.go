@@ -41,9 +41,9 @@ func (b BalanceType) TotalFiat() *money.Money {
 	for key, value := range b {
 		fiatRate, err := currencies.GetFiatRate(key)
 		if err != nil {
-			sum += fiatRate * value
-		} else {
 			sum += 1 * value
+		} else {
+			sum += fiatRate * value
 		}
 	}
 	return money.NewFromFloat(sum, currencies.DefaultFiatCurrency)
