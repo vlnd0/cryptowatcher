@@ -12,7 +12,6 @@ func main() {
 
 func onReady() {
 	data.Manager.Collect()
-	systray.SetTooltip("Pretty awesome超级棒")
 	mQuit := systray.AddMenuItem("Quit", "Quit the whole app")
 
 	go func() {
