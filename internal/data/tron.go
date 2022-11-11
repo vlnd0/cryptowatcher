@@ -1,8 +1,13 @@
 package data
 
+import (
+    "github.com/Rhymond/go-money"
+    "github.com/getlantern/systray"
+)
+
 var TronWallet = TronDataSource{
 	CryptoDataSource{
-		Name: "Tron Blockchain",
+		Name: "Tron Wallet",
 	},
 	TronCredentials{
 		apiKey: "Qwerty",
@@ -20,12 +25,17 @@ type TronDataSource struct {
 
 func (t *TronDataSource) Collect() {
 	t.Balance = make(BalanceType)
+	// TODO: Load assets!
 
-	t.Balance["USDT"] = 100
-	t.Balance["TRX"] = 50
+	t.Balance["USDT"] = 100.0
+	t.Balance["TRX"] = 50.0
 }
 
-func (t *TronDataSource) Format() {
-    t.Balance.Format()
+func (t *TronDataSource) TotalFiat() *money.Money {
+    return t.Balance.TotalFiat()
 }
 
+func (t *TronDataSource) Display() {
+	item := systray.AddMenuItem(t.Name + "(" + t.Balance.TotalFiat().Display() + ")", "")
+    t.Balance.Display(item)
+}

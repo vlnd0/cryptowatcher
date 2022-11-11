@@ -1,8 +1,13 @@
 package data
 
+import (
+    "github.com/Rhymond/go-money"
+    "github.com/getlantern/systray"
+)
+
 var KucoinWallet = KucoinDataSource{
 	CryptoDataSource{
-		Name: "Kucoin Exchange",
+		Name: "Kucoin",
 	},
 	KucoinCredentials{
 		apiKey:    "Qwerty",
@@ -22,11 +27,17 @@ type KucoinDataSource struct {
 
 func (k *KucoinDataSource) Collect() {
 	k.Balance = make(BalanceType)
+	// TODO: Load assets!
 
-	k.Balance["USDC"] = 200
-	k.Balance["SOL"] = 50
+	k.Balance["USDC"] = 200.0
+	k.Balance["SOL"] = 1005.0555
 }
 
-func (k *KucoinDataSource) Format() {
-	k.Balance.Format()
+func (k *KucoinDataSource) TotalFiat() *money.Money {
+	return k.Balance.TotalFiat()
+}
+
+func (k *KucoinDataSource) Display() {
+	item := systray.AddMenuItem(k.Name + "(" + k.Balance.TotalFiat().Display() + ")", "")
+    k.Balance.Display(item)
 }

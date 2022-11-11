@@ -1,8 +1,13 @@
 package data
 
+import (
+    "github.com/Rhymond/go-money"
+    "github.com/getlantern/systray"
+)
+
 var HuobiWallet = HuobiDataSource{
 	CryptoDataSource{
-		Name: "Huobi Exchange",
+		Name: "Huobi",
 	},
 	HuobiCredentials{
 		apiKey:    "Qwerty",
@@ -20,13 +25,19 @@ type HuobiDataSource struct {
 	HuobiCredentials
 }
 
-func (t *HuobiDataSource) Collect() {
-	t.Balance = make(map[string]float32)
+func (h *HuobiDataSource) Collect() {
+	h.Balance = make(BalanceType)
+	// TODO: Load assets!
 
-	t.Balance["USDT"] = 100
-	t.Balance["TRX"] = 50
+	h.Balance["USDT"] = 1005.0555
+	h.Balance["TRX"] = 1005.0555
 }
 
-func (h *HuobiDataSource) Format() {
-	h.Balance.Format()
+func (h *HuobiDataSource) TotalFiat() *money.Money {
+	return h.Balance.TotalFiat()
+}
+
+func (h *HuobiDataSource) Display() {
+    item := systray.AddMenuItem(h.Name + "(" + h.Balance.TotalFiat().Display() + ")", "")
+    h.Balance.Display(item)
 }
