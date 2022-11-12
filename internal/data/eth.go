@@ -12,6 +12,10 @@ import (
 var EthWallet = EthDataSource{
 	CryptoDataSource{
 		Name: "ETH Wallet",
+		Info: TrayElement{
+			Content: "",
+		},
+		ChildElements: make(map[string]TrayElement),
 	},
 	EthCredentials{
 		apiKey:        config.EthApiKey,
@@ -79,6 +83,14 @@ func (t *EthDataSource) TotalFiat() *money.Money {
 }
 
 func (t *EthDataSource) Display() {
-	item := systray.AddMenuItem(t.Name+"("+t.Balance.TotalFiat().Display()+")", "")
-	t.Balance.Display(item)
+	isNew := t.Info.Content == ""
+	value := t.Name + "(" + t.Balance.TotalFiat().Display() + ")"
+	t.Info.Content = value
+	if isNew {
+		item := systray.AddMenuItem(t.Info.Content, "")
+		t.Info.Item = item
+	} else {
+		t.Info.Item.SetTitle(t.Info.Content)
+	}
+	t.Balance.Display(t.Info.Item, t.ChildElements)
 }

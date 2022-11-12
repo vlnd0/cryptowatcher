@@ -13,6 +13,10 @@ import (
 var BscWallet = BscDataSource{
 	CryptoDataSource{
 		Name: "BSC Wallet",
+		Info: TrayElement{
+			Content: "",
+		},
+		ChildElements: make(map[string]TrayElement),
 	},
 	BscCredentials{
 		apiKey:        config.BscApiKey,
@@ -80,6 +84,14 @@ func (t *BscDataSource) TotalFiat() *money.Money {
 }
 
 func (t *BscDataSource) Display() {
-	item := systray.AddMenuItem(t.Name+"("+t.Balance.TotalFiat().Display()+")", "")
-	t.Balance.Display(item)
+	isNew := t.Info.Content == ""
+	value := t.Name + "(" + t.Balance.TotalFiat().Display() + ")"
+	t.Info.Content = value
+	if isNew {
+		item := systray.AddMenuItem(t.Info.Content, "")
+		t.Info.Item = item
+	} else {
+		t.Info.Item.SetTitle(t.Info.Content)
+	}
+	t.Balance.Display(t.Info.Item, t.ChildElements)
 }

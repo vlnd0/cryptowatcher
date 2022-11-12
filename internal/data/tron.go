@@ -23,6 +23,10 @@ type TronTokenJson struct {
 var TronWallet = TronDataSource{
 	CryptoDataSource{
 		Name: "TRON Wallet",
+		Info: TrayElement{
+			Content: "",
+		},
+		ChildElements: make(map[string]TrayElement),
 	},
 	TronCredentials{
 		apiKey: "",
@@ -62,6 +66,15 @@ func (t *TronDataSource) TotalFiat() *money.Money {
 }
 
 func (t *TronDataSource) Display() {
-	item := systray.AddMenuItem(t.Name+"("+t.Balance.TotalFiat().Display()+")", "")
-	t.Balance.Display(item)
+	isNew := t.Info.Content == ""
+	value := t.Name + "(" + t.Balance.TotalFiat().Display() + ")"
+	t.Info.Content = value
+	if isNew {
+		item := systray.AddMenuItem(t.Info.Content, "")
+		t.Info.Item = item
+	} else {
+		t.Info.Item.SetTitle(t.Info.Content)
+	}
+
+	t.Balance.Display(t.Info.Item, t.ChildElements)
 }

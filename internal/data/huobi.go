@@ -13,6 +13,10 @@ import (
 var HuobiWallet = HuobiDataSource{
 	CryptoDataSource{
 		Name: "Huobi",
+		Info: TrayElement{
+			Content: "",
+		},
+		ChildElements: make(map[string]TrayElement),
 	},
 	HuobiCredentials{
 		accessKey: config.HuobiAccessKey,
@@ -56,6 +60,14 @@ func (h *HuobiDataSource) TotalFiat() *money.Money {
 }
 
 func (h *HuobiDataSource) Display() {
-	item := systray.AddMenuItem(h.Name+"("+h.Balance.TotalFiat().Display()+")", "")
-	h.Balance.Display(item)
+	isNew := h.Info.Content == ""
+	value := h.Name + "(" + h.Balance.TotalFiat().Display() + ")"
+	h.Info.Content = value
+	if isNew {
+		item := systray.AddMenuItem(h.Info.Content, "")
+		h.Info.Item = item
+	} else {
+		h.Info.Item.SetTitle(h.Info.Content)
+	}
+	h.Balance.Display(h.Info.Item, h.ChildElements)
 }
