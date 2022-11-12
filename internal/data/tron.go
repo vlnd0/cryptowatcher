@@ -22,7 +22,7 @@ type TronTokenJson struct {
 
 var TronWallet = TronDataSource{
 	CryptoDataSource{
-		Name: "Tron Wallet",
+		Name: "TRON Wallet",
 	},
 	TronCredentials{
 		apiKey: "",

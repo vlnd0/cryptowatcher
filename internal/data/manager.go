@@ -12,7 +12,7 @@ func init() {
 	Manager.cryptoDataSources = []Collectible{
 		&TronWallet,
 		&EthWallet,
-		//&BSCWallet,
+		&BscWallet,
 		&HuobiWallet,
 		//&KucoinWallet,
 	}
