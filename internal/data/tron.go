@@ -3,6 +3,7 @@ package data
 import (
 	"fmt"
 	"github.com/Rhymond/go-money"
+	"github.com/f-sev/cryptowatcher/config"
 	"github.com/f-sev/cryptowatcher/internal/utils"
 	"github.com/getlantern/systray"
 	"strconv"
@@ -39,10 +40,9 @@ type TronDataSource struct {
 
 func (t *TronDataSource) Collect() {
 	t.Balance = make(BalanceType)
-	address := "TGYfsCa9ymzW5hZDYt6sv8ubC2YqsxXsXd"
 
 	var tronJson TronJson
-	err := utils.GetJson(fmt.Sprintf("https://apilist.tronscan.org/api/account?address=%s", address), &tronJson)
+	err := utils.GetJson(fmt.Sprintf("https://apilist.tronscan.org/api/account?address=%s", config.TronWalletAddress), &tronJson)
 	if err != nil {
 		fmt.Printf("Error getting trone data	%s\n", err.Error())
 	}

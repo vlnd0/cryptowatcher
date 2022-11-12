@@ -23,6 +23,7 @@ func loadExchangeRates(currency string) map[string]float64 {
 		"TRX":  0.0590,
 		"USDC": 1.008,
 		"USDT": 0.9988,
+		"DAI":  0.9998,
 	}
 }
 
