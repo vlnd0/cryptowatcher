@@ -10,24 +10,23 @@ import (
 	"strings"
 )
 
-type HuobiJson struct {
-	Tokens      []TronTokenJson `json:"tokens"`
-	TotalFrozen int32           `json:"totalFrozen"`
-}
-
 var HuobiWallet = HuobiDataSource{
 	CryptoDataSource{
 		Name: "Huobi",
 	},
 	HuobiCredentials{
-		apiKey:    "Qwerty",
-		secretKey: "Secret",
+		accessKey: config.HuobiAccessKey,
+		secretKey: config.HuobiSecretKey,
+		host:      config.HuobiHost,
+		accountId: config.HuobiAccountId,
 	},
 }
 
 type HuobiCredentials struct {
-	apiKey    string
+	accessKey string
 	secretKey string
+	host      string
+	accountId string
 }
 
 type HuobiDataSource struct {
@@ -37,9 +36,8 @@ type HuobiDataSource struct {
 
 func (h *HuobiDataSource) Collect() {
 	h.Balance = make(BalanceType)
-	huobiClient := new(client.AccountClient).Init(config.HuobiAccessKey, config.HuobiSecretKey, config.HuobiHost)
-	//resp, err := huobiClient.GetAccountInfo()
-	resp, err := huobiClient.GetAccountBalance(config.HuobiAccountId)
+	huobiClient := new(client.AccountClient).Init(h.accessKey, h.secretKey, h.host)
+	resp, err := huobiClient.GetAccountBalance(h.accountId)
 	if err != nil {
 		fmt.Printf("error. Huobi. %s", err.Error())
 	}

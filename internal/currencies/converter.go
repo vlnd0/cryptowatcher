@@ -19,10 +19,12 @@ func loadExchangeRates(currency string) map[string]float64 {
 	return map[string]float64{
 		"BTC":  17765.10,
 		"ETH":  1317.21,
+		"BNB":  284.19,
 		"SOL":  17.97,
 		"TRX":  0.0590,
 		"USDC": 1.008,
 		"USDT": 0.9988,
+		"DAI":  0.9998,
 	}
 }
 
