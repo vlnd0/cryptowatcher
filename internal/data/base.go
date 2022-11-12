@@ -14,15 +14,24 @@ type Collectible interface {
 }
 
 type CryptoDataSource struct {
-	Name    string
-	Balance BalanceType
+	Name          string
+	Balance       BalanceType
+	Info          TrayElement
+	ChildElements ChildrenElementsType
+}
+
+type TrayElement struct {
+	Content string
+	Item    *systray.MenuItem
 }
 
 type BalanceType map[string]float64
 
-func (b BalanceType) Display(item *systray.MenuItem) {
+type ChildrenElementsType map[string]TrayElement
 
+func (b BalanceType) Display(item *systray.MenuItem, children ChildrenElementsType) {
 	for key, value := range b {
+		child, isExists := children[key]
 		// TODO: Handle error, when there is no exchange rate for currency
 		fiatRate, _ := currencies.GetFiatRate(key)
 		cryptoMoney := money.NewFromFloat(value, key)
@@ -32,7 +41,19 @@ func (b BalanceType) Display(item *systray.MenuItem) {
 		sb.WriteString(cryptoMoney.Display())
 		sb.WriteString(" ")
 		sb.WriteString("(" + fiatMoney.Display() + ")")
-		item.AddSubMenuItem(sb.String(), "")
+		content := sb.String()
+
+		if isExists {
+			child.Content = content
+			child.Item.SetTitle(content)
+		} else {
+			child := item.AddSubMenuItem(content, "")
+			children[key] = TrayElement{
+				Item:    child,
+				Content: content,
+			}
+		}
+
 	}
 }
 
