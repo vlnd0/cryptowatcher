@@ -11,7 +11,7 @@ var Manager = CryptoManager{}
 func init() {
 	Manager.cryptoDataSources = []Collectible{
 		&TronWallet,
-		&ETHWallet,
+		&EthWallet,
 		//&BSCWallet,
 		&HuobiWallet,
 		//&KucoinWallet,

@@ -25,7 +25,7 @@ var TronWallet = TronDataSource{
 		Name: "Tron Wallet",
 	},
 	TronCredentials{
-		apiKey: "Qwerty",
+		apiKey: "",
 	},
 }
 
@@ -46,9 +46,6 @@ func (t *TronDataSource) Collect() {
 	if err != nil {
 		fmt.Printf("Error getting trone data	%s\n", err.Error())
 	}
-
-	//answer, _ := json.Marshal(tronJson)
-	//fmt.Printf("tron data is: %s", answer)
 
 	for _, token := range tronJson.Tokens {
 		value, _ := strconv.Atoi(token.Balance)
