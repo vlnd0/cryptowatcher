@@ -2,30 +2,54 @@ package currencies
 
 import (
 	"errors"
+	"fmt"
+	"github.com/f-sev/cryptowatcher/config"
 	"github.com/f-sev/cryptowatcher/internal/utils"
+	"strconv"
+	"strings"
 )
 
 var exchangeRates map[string]float64
 var DefaultFiatCurrency string
 
-func init() {
-	DefaultFiatCurrency = utils.GetEnv("DEFAULT_FIAT_CURRENCY", "USD")
-	exchangeRates = loadExchangeRates(DefaultFiatCurrency)
+type CurrencyListJson struct {
+	Data []CurrencyInfoJson `json:"data"`
 }
 
-func loadExchangeRates(currency string) map[string]float64 {
-	//	println("Loading exchange rates for ", currency, "...")
+type CurrencyInfoJson struct {
+	Symbol   string `json:"symbol"`
+	PriceUsd string `json:"priceUsd"`
+}
 
-	return map[string]float64{
-		"BTC":  17765.10,
-		"ETH":  1317.21,
-		"BNB":  284.19,
-		"SOL":  17.97,
-		"TRX":  0.0590,
-		"USDC": 1.008,
-		"USDT": 0.9988,
-		"DAI":  0.9998,
+func init() {
+	DefaultFiatCurrency = utils.GetEnv("DEFAULT_FIAT_CURRENCY", "USD")
+	//exchangeRates = loadExchangeRates()
+}
+
+func loadExchangeRates() map[string]float64 {
+	var response map[string]float64
+	if exchangeRates == nil {
+		response = make(map[string]float64, 10)
+	} else {
+		response = exchangeRates
 	}
+
+	var currencyJson CurrencyListJson
+	err := utils.GetJson(fmt.Sprintf("https://api.coincap.io/v2/assets?ids=%s", strings.Join(config.CurrencyList[:], ",")), &currencyJson)
+	if err != nil {
+		fmt.Printf("Error getting trone data	%s\n", err.Error())
+	}
+
+	for _, token := range currencyJson.Data {
+		value, _ := strconv.ParseFloat(token.PriceUsd, 64)
+		response[token.Symbol] = value
+	}
+
+	return response
+}
+
+func UpdateRates() {
+	exchangeRates = loadExchangeRates()
 }
 
 func GetFiatRate(crypto string) (res float64, err error) {
