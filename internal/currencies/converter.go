@@ -23,12 +23,16 @@ type CurrencyInfoJson struct {
 
 func init() {
 	DefaultFiatCurrency = utils.GetEnv("DEFAULT_FIAT_CURRENCY", "USD")
-	exchangeRates = loadExchangeRates()
+	//exchangeRates = loadExchangeRates()
 }
 
 func loadExchangeRates() map[string]float64 {
-	fmt.Print("Loading exchange rates for ")
-	response := make(map[string]float64, 10)
+	var response map[string]float64
+	if exchangeRates == nil {
+		response = make(map[string]float64, 10)
+	} else {
+		response = exchangeRates
+	}
 
 	var currencyJson CurrencyListJson
 	err := utils.GetJson(fmt.Sprintf("https://api.coincap.io/v2/assets?ids=%s", strings.Join(config.CurrencyList[:], ",")), &currencyJson)
@@ -42,6 +46,10 @@ func loadExchangeRates() map[string]float64 {
 	}
 
 	return response
+}
+
+func UpdateRates() {
+	exchangeRates = loadExchangeRates()
 }
 
 func GetFiatRate(crypto string) (res float64, err error) {
