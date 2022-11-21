@@ -14,7 +14,7 @@ func init() {
 		&EthWallet,
 		&BscWallet,
 		&HuobiWallet,
-		//&KucoinWallet,
+		&AlterWallet,
 	}
 }
 
